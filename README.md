@@ -1,6 +1,6 @@
-# Escola Zelo (mock funcional)
+# Zelo | Captação Interna
 
-Aplicação web responsiva (desktop + mobile) para treinamento interno da Zelo Imóveis.
+Aplicativo interno (web responsivo e mobile-friendly) para rotina diária de captação de imóveis para locação em Campinas/SP.
 
 ## Como executar
 
@@ -8,34 +8,39 @@ Aplicação web responsiva (desktop + mobile) para treinamento interno da Zelo I
 python3 -m http.server 4173
 ```
 
-Abra `http://localhost:4173`.
+Acesse: `http://localhost:4173`
 
-## Usuários mock
+## Usuários seed
 
-- Aluno: `aluno@zelo.com` / `123456`
-- Admin: `admin@zelo.com` / `123456`
+- **Admin (Gestor):** `admin` / `123456`
+- **Usuário (Funcionário):** `bruno` / `123456`
 
-## Fluxo de teste
+## Módulos implementados
 
-1. Login (aluno)
-2. Dashboard → continuar curso
-3. Aula com rolagem + progresso
-4. Concluir aulas e fazer avaliação
-5. Concluir curso e baixar certificado
-6. Ver notificações
-7. Login admin para criar usuários/notificações e ver auditoria
+- Login com usuário/senha + fluxo simples de “esqueci a senha”.
+- Home com resumo diário, notificações e progresso do mês.
+- Rotina com scroll de 30 cards (Dia 1…30) já cadastrados.
+- Tela do Dia com mapa OSM (Leaflet), filtro de bairros e checklist executável.
+- Novo Lead com validações obrigatórias.
+- Notificações com criação pelo admin + campanhas.
+- Relatórios admin com KPIs e exportação CSV.
+- Trilha de auditoria de ações (login, tarefas, leads, notificações, export).
 
-## Schema de referência
+## Regras de validação implementadas
 
-Tabelas modeladas no estado local em memória/localStorage:
+- Finalizar dia exige no mínimo **70%** das tarefas com status válido (`feito/sem resultado/precisa ajuda`).
+- Finalizar dia exige **1 resultado por origem usada** no dia (`Imoview/Fisgar/Eemovel/Concorrentes`).
+- Tarefa de origem **Concorrentes** exige `link` e `print/observação`.
+- Todo lead exige `bairro + origem + link/evidência + faixa de valor`.
 
-- `users(id, name, email, password_hash, role, sector, position, created_at, last_login)`
-- `tracks(id, title, description, is_mandatory, created_at)`
-- `courses(id, track_id, title, description, workload_hours, passing_score, max_attempts)`
-- `lessons(id, course_id, title, content_html, video_url, min_watch_percent, min_time_seconds, order_index)`
-- `materials(id, lesson_id, title, type, url_or_file_path)`
-- `progress(user_id, lesson_id, status, watched_percent, time_spent, completed_at)`
-- `quizzes(id, course_id, title)`
-- `questions(id, quiz_id, type, prompt, options_json, correct_answer_json)`
-- `attempts(id, quiz_id, user_id, score, passed, attempt_number, started_at, finished_at)`
-- `certificates(id, user_id, course_id, code, issued_at, pdf_path)`
+## Estrutura de dados (localStorage)
+
+- `users(id, name, username, password, role, team)`
+- `campaigns(id, title, description, createdBy, createdAt)`
+- `notifications(id, title, text, date, pinnedDays, targetUsers, createdBy, createdAt)`
+- `routines(id, day, theme, bairros[], objectives, tasks[])`
+- `taskResults(day, taskIndex, userId, source, status, resultado, link, printObs, updatedAt)`
+- `leads(id, day, userId, origem, bairro, tipo, faixaValor, proprietario, contato, condicoes, link, status, proximosPassos, createdAt)`
+- `dayNotes(day, userId, text)`
+- `dayFinalizations(day, userId, at)`
+- `auditLogs(id, action, payload, by, at)`
